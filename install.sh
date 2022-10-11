@@ -1,4 +1,4 @@
-sudo apt install -y xorg git sddm wget software-properties-common awesome awesome-extra 
+sudo apt install -y xorg git wget software-properties-common awesome awesome-extra 
 sudo add-apt-repository contrib
 sudo add-apt-repository non-free
 sudo apt update
@@ -23,3 +23,6 @@ fc-cache -f -v
 
 mkdir -p ~/Downloads
 mkdir -p ~/Pictures
+
+
+sudo reboot
