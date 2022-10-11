@@ -1,27 +1,20 @@
--- My shortcuts for awesomewm
 local gears = require("gears")
 local awful = require("awful")
 local naughty = require("naughty")
-
 local menubar = require("menubar")
 
--- local hotkeys_popup = require("awful.hotkeys_popup")
-local modkey = "Mod4"
 
--- swap alt and ctrl (for Emacs reasons)
+local modkey = "Mod4"
 local altkey = "Alt"
 local ctrlkey = "Control"
-
+local hotkeys_popup = require("awful.hotkeys_popup")
 local home = os.getenv("HOME")
 local terminal = "kitty"
-
 local editor = "nano"
-
 local file_manager = terminal .. " ranger"
 local browser = "google-chrome-stable"
 
 local rofi_dir = home .. "/.config/awesome/rofi/"
-local scripts_dir = home .. "/.config/myshell/scripts/"
 
 menubar.show_categories = false
 
@@ -41,8 +34,8 @@ end
 
 -- {{{ Key bindings
 local globalkeys = gears.table.join(
--- awful.key({ modkey,             }, "/",        hotkeys_popup.show_help,
---             {description="show help", group="awesome"}),
+   awful.key({ modkey, }, "/", hotkeys_popup.show_help,
+      { description = "show help", group = "awesome" }),
 
    awful.key({ modkey, }, "Left",
       function()
@@ -74,9 +67,9 @@ local globalkeys = gears.table.join(
 
 
 
-   awful.key({ modkey, }, "w",
+   awful.key({ modkey }, "Tab",
       function()
-         awful.spawn("rofi -show window")
+         awful.spawn("rofi -show window -config " .. rofi_dir .. "config.rasi")
       end,
       { description = "show all windows from all workspaces", group = "awesome" }),
 
@@ -90,21 +83,13 @@ local globalkeys = gears.table.join(
    awful.key({ modkey, }, "u", awful.client.urgent.jumpto,
       { description = "jump to urgent client", group = "client" }),
 
-   awful.key({ modkey, }, "Tab",
-      function()
-         awful.client.focus.history.previous()
-         if client.focus then
-            client.focus:raise()
-         end
-      end,
-      { description = "go back", group = "client" }),
 
    -- Standard program
    awful.key({ modkey, }, "Return", function() awful.spawn(terminal) end,
       { description = "open a terminal", group = "launcher" }),
 
 
-   awful.key({ modkey, "Shift" }, "r", awesome.restart,
+   awful.key({ modkey, "Control" }, "r", awesome.restart,
       { description = "reload awesome", group = "awesome" }),
 
 
@@ -121,7 +106,7 @@ local globalkeys = gears.table.join(
    awful.key({ modkey, "Shift" }, "q", awesome.quit,
       { description = "quit awesome", group = "awesome" }),
 
-   awful.key({ modkey, }, "d",
+   awful.key({ modkey, }, "`",
       function() awful.spawn("rofi -no-lazy-grab -show drun -modi drun -config " .. rofi_dir .. "config.rasi") end,
       { description = "launch rofi", group = "launcher" }),
 
@@ -132,15 +117,32 @@ local globalkeys = gears.table.join(
    awful.key({ ctrlkey }, "Print", function() awful.spawn("scrot -m -e 'mv $f /home/ali/Pictures/'") end,
       { description = "capture a screenshot of active window", group = "screenshot" }),
 
-   awful.key({}, "XF86AudioMute", function() awful.spawn("amixer -q set Master toggle") end,
-      { description = "Mute/Unmute master volumn", group = "Sound" }),
+   -- awful.key({}, "XF86AudioMute", function() awful.spawn("amixer -q set Master toggle") end,
+   --    { description = "Mute/Unmute master volumn", group = "Sound" }),
 
+   awful.key({ }, "XF86AudioMute", spawn_and_notify("amixer -q set Master toggle", "Mute/Unmute toggled"),
+      { description = "Mute/Unmute master volumn", group = "Sound" }),
 
    awful.key({}, "XF86AudioLowerVolume", function() awful.spawn("amixer set Master 5%-") end,
       { description = "Lower master volumn", group = "Sound" }),
 
    awful.key({}, "XF86AudioRaiseVolume", function() awful.spawn("amixer set Master 5%+") end,
-      { description = "Raise master volumn", group = "Sound" })
+      { description = "Raise master volumn", group = "Sound" }),
+
+
+
+   awful.key({ modkey, ctrlkey }, "Up", function() awful.client.incwfact(0.05) end,
+      { description = "increase client size vertically", group = "client" }),
+
+   awful.key({ modkey, ctrlkey }, "Down", function() awful.client.incwfact(-0.05) end,
+      { description = "decrease client size vertically", group = "client" }),
+
+   awful.key({ modkey, ctrlkey }, "Right", function() awful.tag.incmwfact(0.05) end,
+      { description = "increase master width factor", group = "layout" }),
+
+   awful.key({ modkey, ctrlkey }, "Left", function() awful.tag.incmwfact(-0.05) end,
+      { description = "decrease master width factor", group = "layout" })
+
 
 )
 
@@ -149,6 +151,8 @@ clientkeys = gears.table.join(
 
    awful.key({ modkey, }, "c", function(c) c:kill() end,
       { description = "close", group = "client" })
+
+
 
 
 )

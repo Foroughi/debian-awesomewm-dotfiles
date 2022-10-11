@@ -73,8 +73,8 @@ blue        = "#9EBABA"
 red         = "#EB8F8F"
 
 awful.screen.connect_for_each_screen(function(s) 
-  beautiful.at_screen_connect(s);
 
+  beautiful.at_screen_connect(s);
   
 end)
 
@@ -148,3 +148,6 @@ end)
 awful.spawn.once("nitrogen --restore")
 awful.spawn.once("compton")
 awful.spawn("conky")
+awful.spawn("nm-applet")
+
+--awful.spawn.once("kitty")

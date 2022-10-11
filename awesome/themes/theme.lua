@@ -146,6 +146,9 @@ local function underligingDrawer(cr, width, height, degree)
     cr:close_path()
 end
 
+-- Separators
+local seperator = wibox.widget.textbox('<span font="Iosevka Comfy 3">  </span>')
+
 theme.time = wibox.widget {
     awful.widget.watch(
         "date +'%I:%M '", 10,
@@ -279,8 +282,6 @@ theme.mem = wibox.widget {
             end
         }.widget,
 
-
-
         lain.widget.mem {
             settings = function()
                 widget:set_markup(markup(theme.purple, markup.font(theme.font, mem_now.perc .. '%')));
@@ -301,91 +302,6 @@ theme.mem = wibox.widget {
 
 }
 
-theme.lan = wibox.widget {
-    {
-
-        lain.widget.net {
-            notify = "on",
-            wifi_state = "on",
-            eth_state = "on",
-            settings = function()
-
-                local icon = "No connection";
-
-                local lan = net_now.devices.enp2s0
-                
-
-                if lan and lan.state == 'up' then
-
-                    icon = "\u{f6ff}";
-                    widget:set_markup(markup(theme.fg_normal, make_fa_icon(icon, theme.siconfont)));
-
-              
-
-                else
-                    widget:set_markup(markup(theme.fg_normal, icon));
-                end
-
-
-            end
-        }.widget,
-        forced_height = 21,
-        layout = wibox.layout.fixed.horizontal
-    },
-    {
-        shape         = underligingDrawer,
-        border_width  = 3,
-        border_color  = theme.fg_normal,
-        forced_height = 3,
-        forced_width  = 10,
-        widget        = wibox.widget.separator,
-    },
-    layout = wibox.layout.fixed.vertical
-
-}
-
-
-theme.wan = wibox.widget {
-    {
-
-        lain.widget.net {
-            notify = "on",
-            wifi_state = "on",
-            eth_state = "on",
-            settings = function()
-
-                local icon = "No connection";                
-                local wan = net_now.devices.wlp3s0
-
-                if wan and wan.state == 'up' then
-
-                    icon = "\u{f1eb}";
-                    widget:set_markup(markup(theme.fg_normal, make_fa_icon(icon, theme.biconfont)));
-
-                else
-                    widget:set_markup(markup(theme.fg_normal, icon));
-                end
-
-
-            end
-        }.widget,
-        forced_height = 21,
-        layout = wibox.layout.fixed.horizontal
-    },
-    {
-        shape         = underligingDrawer,
-        border_width  = 3,
-        border_color  = theme.fg_normal,
-        forced_height = 3,
-        forced_width  = 10,
-        widget        = wibox.widget.separator,
-    },
-    layout = wibox.layout.fixed.vertical
-
-}
-
--- Separators
-local seperator = wibox.widget.textbox('<span font="Iosevka Comfy 3">  </span>')
 
 function right_tri(cr, width, height, degree)
     cr:move_to(18, 0)
@@ -399,16 +315,6 @@ function left_tri(cr, width, height, degree)
     cr:line_to(0, 18)
     cr:line_to(18, 18)
     cr:close_path()
-end
-
-local function mysep(shape)
-    return wibox.widget {
-        shape        = shape,
-        color        = color,
-        border_width = 0,
-        forced_width = 18,
-        widget       = wibox.widget.separator,
-    }
 end
 
 local barheight = dpi(18)
@@ -429,6 +335,7 @@ theme.titlebar_bg_focus = gears.color({
 })
 
 local taglist_buttons = gears.table.join(
+    awful.button({ }, 1, function(t) t:view_only() end)
 -- awful.button({}, 1, function(t) t:view_only() end),
 -- awful.button({ modkey }, 1, function(t)
 --     if client.focus then
@@ -471,27 +378,38 @@ theme.volumnWidge:buttons(gears.table.join(
     end)
 ))
 
-local new_shape = function(cr, width, height)
-
-    gears.shape.transform(gears.shape.infobubble):translate(0, 20):rotate_at(35, 35, math.pi)(cr, width, height)
-end
+theme.sysTray = {
+    {
+        layout = wibox.layout.fixed.horizontal,
+        seperator,
+        theme.mem,
+        seperator,
+        theme.cpu,
+        seperator,
+        theme.volumnWidge,
+        seperator,
+        theme.date,
+        seperator,
+        theme.time,
+        seperator,
+        wibox.widget.systray(),
+        seperator,
+    },
+    {
+        layout = wibox.layout.fixed.horizontal,
+        seperator,
+        theme.date,
+        seperator,
+        theme.time,
+        seperator
+    }
+}
 
 function theme.at_screen_connect(s)
-    -- Quake application
-    --s.quake = lain.util.quake({ app = awful.util.terminal })
 
-    -- If wallpaper is a function, call it with the screen
-    -- local wallpaper = theme.wallpaper
-    -- if type(wallpaper) == "function" then
-    --     wallpaper = wallpaper(s)
-    -- end
-    -- gears.wallpaper.maximized(wallpaper, s, true)
 
-    if s.index == 1 then
-        awful.tag(awful.util.tagnames[s.index], s, awful.layout.layouts[1])
-    else
-        awful.tag(awful.util.tagnames[s.index], s, awful.layout.layouts[2])
-    end
+    awful.tag(awful.util.tagnames[s.index], s, awful.layout.layouts[s.index])
+
 
     s.mypromptbox = awful.widget.prompt()
 
@@ -555,9 +473,7 @@ function theme.at_screen_connect(s)
 
                     end
                 end)
-                self:connect_signal('mouse::press', function()
 
-                end)
                 self:connect_signal('mouse::leave', function()
                     if index ~= s.selected_tag.index then
                         self.bg = theme.dark
@@ -587,108 +503,43 @@ function theme.at_screen_connect(s)
             end,
         },
         buttons         = taglist_buttons
-    }
+    }  
 
-    -- Create the wibox
     s.mywibox = awful.wibox({ screen = s, height = dpi(26), bg = theme.transparent, opacity = 0.8 })
 
-    --s.mywibox = awful.wibar({ screen = s, position = "top", width = 2540, stretch = false, margins = { top = 10 }, height = 18, border_width = 0, opacity = 1.0, bg = theme.tasklist_bg_normal, fg = theme.fg_normal, shape = function(cr, width, height) gears.shape.rounded_rect(cr, width, height, 0) end })
+    s.mywibox:setup {
 
-    if s.index == 1 then
-
-        s.mywibox:setup {
-
+        {
+            widget = wibox.container.background,
+            bg     = theme.black,
+            radius = 1,
+            shape  = gears.shape.rounded_rect,
             {
-                widget = wibox.container.background,
-                bg     = theme.black,
-                radius = 1,
-                shape  = gears.shape.rounded_rect,
                 {
-                    {
-                        layout = wibox.layout.align.horizontal,
-                        { -- Left widgets
-                            layout = wibox.layout.fixed.horizontal,
-                            s.mytaglist
-                        },
-                        nil,
-                        { -- Right widgets
-                            layout = wibox.layout.fixed.horizontal,
-                            seperator,
-                            wibox.widget.systray(),
-                            seperator,
-                            theme.lan,
-                            seperator,
-                            theme.wan,
-                            seperator,
-                            theme.mem,
-                            seperator,
-                            theme.cpu,
-                            seperator,
-                            theme.volumnWidge,
-                            seperator,
-                            theme.date,
-                            seperator,
-                            theme.time,
-                            seperator
-                        }
+                    layout = wibox.layout.align.horizontal,
+                    { -- Left widgets
+                        layout = wibox.layout.fixed.horizontal,
+                        s.mytaglist
                     },
-                    left = 5,
-                    right = 5,
-                    top = 5,
-                    bottom = 5,
-                    widget = wibox.container.margin
+                    nil,
+                    theme.sysTray[s.index]
+                },
+                left = 5,
+                right = 5,
+                top = 5,
+                bottom = 5,
+                widget = wibox.container.margin
 
-                }
-            },
-            left = 5,
-            right = 5,
-            top = 5,
-            bottom = 0,
-            widget = wibox.container.margin
+            }
+        },
+        left = 5,
+        right = 5,
+        top = 5,
+        bottom = 0,
+        widget = wibox.container.margin
 
-        }
-    else
-        s.mywibox:setup {
+    }
 
-            {
-                widget = wibox.container.background,
-                bg     = theme.black,
-                radius = 1,
-                shape  = gears.shape.rounded_rect,
-                {
-                    {
-                        layout = wibox.layout.align.horizontal,
-                        { -- Left widgets
-                            layout = wibox.layout.fixed.horizontal,
-                            s.mytaglist
-                        },
-                        nil,
-                        { -- Right widgets
-                            layout = wibox.layout.fixed.horizontal,
-                            seperator,
-                            wibox.widget.systray(),
-                            theme.date,
-                            seperator,
-                            theme.time,
-                            seperator
-                        }
-                    },
-                    left = 5,
-                    right = 5,
-                    top = 5,
-                    bottom = 5,
-                    widget = wibox.container.margin
-
-                }
-            },
-            left = 5,
-            right = 5,
-            top = 5,
-            bottom = 0,
-            widget = wibox.container.margin
-
-        }
-    end
 
 end
 
