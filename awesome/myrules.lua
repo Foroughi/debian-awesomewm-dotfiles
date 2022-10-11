@@ -3,12 +3,17 @@ local beautiful = require("beautiful")
 
 myrules = {
 
-  { rule = {},
-    properties = {
-
+  { rule = { },
+    properties = { border_width = beautiful.border_width,
+      border_color = beautiful.border_normal,
+      focus = awful.client.focus.filter,
+      raise = true,
       keys = clientkeys,
-      buttons = clientbuttons
-
+      buttons = clientbuttons,
+      size_hints_honor = false, -- Remove gaps between terminals
+      screen = awful.screen.preferred,
+      callback = awful.client.setslave,
+      placement = awful.placement.no_overlap + awful.placement.no_offscreen
     }
   },
 
@@ -19,6 +24,8 @@ myrules = {
   { rule = { class = "Google-chrome" }, properties = { screen = 2, tag = "www", floating = false } },
   { rule = { class = "Code" }, properties = { screen = 1, tag = "dev", floating = false } },
   { rule = { class = "kitty" }, properties = { screen = 1, tag = "term", floating = false } },
+
+  { rule = { class = "feh" }, properties = { floating = false } },
 
 
 
