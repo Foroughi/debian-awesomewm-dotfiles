@@ -1,4 +1,4 @@
-sudo apt install -y xorg git wget software-properties-common awesome awesome-extra 
+sudo apt install -y xorg git `wget software-properties-common awesome awesome-extra 
 sudo add-apt-repository contrib
 sudo add-apt-repository non-free
 sudo apt update
@@ -17,7 +17,7 @@ mkdir ~/.fonts
 sudo apt install -y python3-pip
 pip3 install requests
 
-cp ./fonts/* ~/.fonts
+cp ~/.config/fonts/* ~/.fonts
 fc-cache -f -v
 
 
