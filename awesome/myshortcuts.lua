@@ -110,6 +110,10 @@ local globalkeys = gears.table.join(
       function() awful.spawn("rofi -no-lazy-grab -show drun -modi drun -config " .. rofi_dir .. "config.rasi") end,
       { description = "launch rofi", group = "launcher" }),
 
+   awful.key({ }, "Pause",
+      function() awful.spawn("rofi -show power-menu -modi power-menu:" .. rofi_dir .. "rofi-power-menu -config " .. rofi_dir .. "config.rasi") end,
+      { description = "Shutdown menu", group = "launcher" }),
+
 
    awful.key({}, "Print", function() awful.spawn("scrot -u -e 'mv $f /home/ali/Pictures/'") end,
       { description = "capture a screenshot", group = "screenshot" }),
