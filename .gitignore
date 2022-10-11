@@ -3,9 +3,9 @@
 !/.gitignore
 
 !/awesome
-!/awesome/
+!/awesome/**
 !/backgrounds
-!/backgrounds/*
+!/backgrounds/**
 !/conky
 !/conky/**
 !/fonts
