@@ -335,7 +335,7 @@ theme.titlebar_bg_focus = gears.color({
 })
 
 local taglist_buttons = gears.table.join(
-    awful.button({ }, 1, function(t) t:view_only() end)
+    awful.button({}, 1, function(t) t:view_only() end)
 -- awful.button({}, 1, function(t) t:view_only() end),
 -- awful.button({ modkey }, 1, function(t)
 --     if client.focus then
@@ -388,20 +388,12 @@ theme.sysTray = {
         seperator,
         theme.volumnWidge,
         seperator,
-        theme.date,
-        seperator,
-        theme.time,
-        seperator,
         wibox.widget.systray(),
         seperator,
     },
     {
         layout = wibox.layout.fixed.horizontal,
-        seperator,
-        theme.date,
-        seperator,
-        theme.time,
-        seperator
+        
     }
 }
 
@@ -503,7 +495,7 @@ function theme.at_screen_connect(s)
             end,
         },
         buttons         = taglist_buttons
-    }  
+    }
 
     s.mywibox = awful.wibox({ screen = s, height = dpi(26), bg = theme.transparent, opacity = 0.8 })
 
@@ -521,7 +513,18 @@ function theme.at_screen_connect(s)
                         layout = wibox.layout.fixed.horizontal,
                         s.mytaglist
                     },
-                    nil,
+                    {
+                        {
+                            theme.date,
+                            seperator,
+                            theme.time,
+                            seperator,
+                            layout = wibox.layout.fixed.horizontal
+                        },
+                        layout = wibox.container.place,
+                        expand = true,
+                        forced_width = 300
+                    },
                     theme.sysTray[s.index]
                 },
                 left = 5,
